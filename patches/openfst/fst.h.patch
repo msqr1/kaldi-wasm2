@@ -4,3 +4,4 @@
 ---
 >     isymbols_.reset(impl.isymbols_ ? impl.isymbols_->Copy() : nullptr);
 >     osymbols_.reset(impl.osymbols_ ? impl.osymbols_->Copy() : nullptr);
+

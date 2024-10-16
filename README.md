@@ -2,13 +2,11 @@
 
 ## Overview
 
-- There is [an older guide](https://gitlab.inria.fr/multispeech/kaldi.web/kaldi-wasm/-/wikis/build_details.md) for this that compiled Kaldi with [CLAPACK](https://www.netlib.org/clapack) (not properly tested) and Netlib's Reference BLAS, which was not optimized for performance, but rather as a way for implementers of the BLAS standard to verify the correctness of their own implementation.
+- There is [an older guide](https://gitlab.inria.fr/multispeech/kaldi.web/kaldi-wasm/-/wikis/build_details.md) for this that compiled Kaldi with [CLAPACK](https://www.netlib.org/clapack) (not properly tested) and [Netlib's Reference BLAS](https://www.netlib.org/blas), which exists solely for implementers of the BLAS standard to verify the correctness of their own implementation, and thus, not optimized for performance.
 
 - This newer guide compile Kaldi using [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS), a high-performance, optimized, actively maintained BLAS library officially supported by Kaldi. It also includes both BLAS and LAPACK. This was profiled to speed up Kaldi by around 20% compared to the build with Netlib's Reference BLAS and CLAPACK.
 
 - This guide compiles Kaldi's "online decoding" target ```online2``` More info: https://kaldi-asr.org/doc/online_decoding.html
-
--  Compilation optimization level is -O3 by default
 
 ## Versions
 - Emscripten: 3.1.69
@@ -18,15 +16,17 @@
 
 ## Step 1: Prepare
 - Execute all commands in one terminal
+- Make a directory and change into it before starting
+- Compilation optimization level is -O3 by default througout this guide
 ```
 # Our build root, exported so that we can refer to it in this terminal
-export ROOT=$(realpath .)
+export ROOT="$PWD"
 
 # Clone this repository
-git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 $ROOT
+git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
 
 # Enter that directory
-cd $ROOT
+cd "$ROOT"
 ```
 
 ## Step 2: Emscripten
@@ -52,7 +52,7 @@ source ./emsdk_env.sh
 ## Step 3: OpenFST
 ```
 # Go to build root
-cd $ROOT
+cd "$ROOT"
 
 # Get OpenFST
 wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.3.tar.gz -O openfst.tgz
@@ -72,7 +72,7 @@ patch -i "$ROOT"/patches/openfst/fst.h.patch ./src/include/fst/fst.h
 patch -i "$ROOT"/patches/openfst/bi-table.h.patch ./src/include/fst/bi-table.h
 
 # Configuring static OpenFST with Ngram fsts
-CXXFLAGS="-O3 -fno-rtti" emconfigure ./configure --prefix="$ROOT/openfst-build" --enable-static --disable-shared --enable-ngram-fsts --disable-bin
+CXXFLAGS="-O3 -fno-rtti" emconfigure ./configure --prefix="$ROOT"/openfst-build" --enable-static --disable-shared --enable-ngram-fsts --disable-bin
 
 # Compile and install into prefix
 emmake make -j$(nproc) install > /dev/null
@@ -82,7 +82,7 @@ emmake make -j$(nproc) install > /dev/null
 - The most crucial step of the build, some hacks are required for this to work
 ```
 # Go to build root
-cd $ROOT
+cd "$ROOT"
 
 # Get OpenBLAS
 git clone -b v0.3.28 --depth=1 https://github.com/OpenMathLib/OpenBLAS openblas
@@ -100,13 +100,13 @@ patch -i "$ROOT"/patches/openblas/Makefile.system.patch Makefile.system
 CC=emcc HOSTCC=clang-20 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
 
 # Install into prefix
-PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
+PREFIX="$ROOT"/openblas-build" NO_SHARED=1 make install
 ```
 
 ## Step 5: Kaldi
 ```
 # Go to build root
-cd $ROOT
+cd "$ROOT"
 
 # Get Kaldi
 git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm
@@ -115,7 +115,7 @@ git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm
 cd kaldi/src
 
 # Configuring static Kaldi with static installed dependencies
-CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
+CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT"/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT"/openblas-build" --host=WASM
 
 # Compile our target
 make -j$(nproc) online2 > /dev/null
@@ -124,7 +124,7 @@ make -j$(nproc) online2 > /dev/null
 ## Step 6: Clean up
 ```
 # Go to build root
-cd $ROOT
+cd "$ROOT"
 
 # Clean up
 rm -rf openfst.tgz openfst openblas
@@ -132,36 +132,36 @@ rm -rf openfst.tgz openfst openblas
 
 ## Full command
 ```
-export ROOT=$(realpath .)
-git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 $ROOT
-cd $ROOT
+export ROOT="$PWD"
+git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
+cd "$ROOT"
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
-./emsdk install 3.1.69
-./emsdk activate 3.1.69
-source ./emsdk_env.sh
-cd $ROOT
+emsdk install 3.1.69
+emsdk activate 3.1.69
+source emsdk_env.sh
+cd "$ROOT"
 wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.3.tar.gz -O openfst.tgz
 mkdir openfst
 tar -xzf openfst.tgz -C openfst --strip-component 1
 cd openfst
 patch -i "$ROOT"/patches/openfst/fst.h.patch ./src/include/fst/fst.h
 patch -i "$ROOT"/patches/openfst/bi-table.h.patch ./src/include/fst/bi-table.h
-CXXFLAGS="-O3 -fno-rtti" emconfigure ./configure --prefix="$ROOT/openfst-build" --enable-static --disable-shared --enable-ngram-fsts --disable-bin
+CXXFLAGS="-O3 -fno-rtti" emconfigure ./configure --prefix="$ROOT"/openfst-build" --enable-static --disable-shared --enable-ngram-fsts --disable-bin
 emmake make -j$(nproc) install > /dev/null
-cd $ROOT
+cd "$ROOT"
 git clone -b v0.3.28 --depth=1 https://github.com/OpenMathLib/OpenBLAS openblas
 cd openblas
 patch -i "$ROOT"/patches/openblas/Makefile.riscv64.patch Makefile.riscv64
 patch -i "$ROOT"/patches/openblas/Makefile.prebuild.patch Makefile.prebuild
 patch -i "$ROOT"/patches/openblas/Makefile.system.patch Makefile.system
 CC=emcc HOSTCC=clang-20 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
-PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
-cd $ROOT
+PREFIX="$ROOT"/openblas-build" NO_SHARED=1 make install
+cd "$ROOT"
 git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm kaldi
 cd kaldi/src
-CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
+CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT"/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT"/openblas-build" --host=WASM
 make -j$(nproc) online2 > /dev/null
-cd $ROOT
+cd "$ROOT"
 rm -rf openfst.tgz openfst openblas
 ```

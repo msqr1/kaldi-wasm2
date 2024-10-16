@@ -1,0 +1,3 @@
+18,19d17
+< CCOMMON_OPT += -march=rv64imafdc -mabi=lp64d
+< FCOMMON_OPT += -march=rv64imafdc -mabi=lp64d

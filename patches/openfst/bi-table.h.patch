@@ -1,0 +1,4 @@
+333c333
+<       : selector_(table.s_),
+---
+>       : selector_(table.selector_),

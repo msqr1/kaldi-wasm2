@@ -1,0 +1,6 @@
+690,691c690,691
+<     isymbols_ = impl.isymbols_ ? impl.isymbols_->Copy() : nullptr;
+<     osymbols_ = impl.osymbols_ ? impl.osymbols_->Copy() : nullptr;
+---
+>     isymbols_.reset(impl.isymbols_ ? impl.isymbols_->Copy() : nullptr);
+>     osymbols_.reset(impl.osymbols_ ? impl.osymbols_->Copy() : nullptr);

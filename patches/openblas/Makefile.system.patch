@@ -1,0 +1,8 @@
+205d204
+< GETARCH_FLAGS += -march=native
+1419d1417
+< CCOMMON_OPT += -fPIC
+1686c1684
+< COMMON_OPT = -O2
+---
+> COMMON_OPT = -O3

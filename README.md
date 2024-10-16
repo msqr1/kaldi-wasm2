@@ -165,5 +165,3 @@ make -j$(nproc) online2 > /dev/null
 cd $ROOT
 rm -rf openfst.tgz openfst openblas
 ```
-
-## Bonus

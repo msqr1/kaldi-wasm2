@@ -160,7 +160,7 @@ PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
 cd $ROOT
 git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm kaldi
 cd kaldi/src
-CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root='$ROOT/openfst-build' --fst-version='1.8.3' --openblas-root='$ROOT/openblas-build' --host=WASM
+CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
 make -j$(nproc) online2 > /dev/null
 cd $ROOT
 rm -rf openfst.tgz openfst openblas

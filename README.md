@@ -115,7 +115,7 @@ git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm
 cd kaldi/src
 
 # Configuring static Kaldi with static installed dependencies
-CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root='$ROOT/openfst-build' --fst-version='1.8.3' --openblas-root='$ROOT/openblas-build' --host=WASM
+CXXFLAGS='-UHAVE_EXECINFO_H -g0 -O3 -msimd128' emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
 
 # Compile our target
 make -j$(nproc) online2 > /dev/null

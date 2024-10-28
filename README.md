@@ -97,7 +97,8 @@ patch -i "$ROOT"/patches/openblas/Makefile.prebuild.patch Makefile.prebuild
 patch -i "$ROOT"/patches/openblas/Makefile.system.patch Makefile.system
 
 # Make single-threaded static OpenBLAS with just single and double precision
-CC=emcc HOSTCC=clang-20 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
+# Change HOSTCC to the C compiler on your machine. Mine is gcc-12 from Debian 12
+CC=emcc HOSTCC=gcc-12 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
 
 # Install into prefix
 PREFIX="$ROOT"/openblas-build" NO_SHARED=1 make install
@@ -155,7 +156,7 @@ cd openblas
 patch -i "$ROOT"/patches/openblas/Makefile.riscv64.patch Makefile.riscv64
 patch -i "$ROOT"/patches/openblas/Makefile.prebuild.patch Makefile.prebuild
 patch -i "$ROOT"/patches/openblas/Makefile.system.patch Makefile.system
-CC=emcc HOSTCC=clang-20 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
+CC=emcc HOSTCC=gcc-12 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS='-fno-exceptions -fno-rtti' make -j$(nproc) > /dev/null
 PREFIX="$ROOT"/openblas-build" NO_SHARED=1 make install
 cd "$ROOT"
 git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm kaldi

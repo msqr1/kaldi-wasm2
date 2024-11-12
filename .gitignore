@@ -1,5 +1,4 @@
-openblas-build
-openfst-build
 kaldi
 emsdk
+build
 openfst.tgz

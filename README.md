@@ -206,4 +206,4 @@ cd "$ROOT"
 # Generate .html, .js, and .wasm
 em++ $WAFLAGS -O3 $CXXFLAGS $LDFLAGS kaldi/src/nnet2/am-nnet-test.cc -o index.html
 ```
-- Open the ```index.html``` in a browser, check the console for logs.
+- Open the ```index.html``` in a browser, check the console for logs from the test.

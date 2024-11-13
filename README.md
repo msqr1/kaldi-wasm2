@@ -6,18 +6,21 @@
 
 - This newer guide compile Kaldi using [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS), a high-performance, optimized, actively maintained BLAS library officially supported by Kaldi. It also includes both BLAS and LAPACK. This was profiled to speed up Kaldi by around 20% compared to the build with Netlib's Reference BLAS and CLAPACK.
 
-- This guide compiles Kaldi's "online decoding" target ```online2``` More info: https://kaldi-asr.org/doc/online_decoding.html
+- This guide compiles Kaldi's "online decoding" target `online2` More info: https://kaldi-asr.org/doc/online_decoding.html
 
 ## Versions
+
 - Emscripten: 3.1.69
 - OpenFST: 1.8.3
 - OpenBLAS: 0.3.28
 - Kaldi: ???
 
 ## Step 1: Prepare
+
 - Execute all commands in one terminal
 - Make a directory and change into it before starting
 - Compilation optimization level is -O3 by default througout this guide
+
 ```
 # Our build root, exported so that we can refer to it in this terminal
 export ROOT="$PWD"
@@ -28,20 +31,24 @@ git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
 # Enter that directory
 cd "$ROOT"
 ```
+
 - **Optional**: WASM-specific compilation flags that can boost performance, selected by me with careful condsideration on browser support:
   - Chrome ≥ 75 (2019)
   - Firefox ≥ 79 (2020)
   - Safari ≥ 15 (2021)
   - Edge ≥ 79 (2020)
-- [Wasm features support table](https://webassembly.org/features/) 
+- [Wasm features support table](https://webassembly.org/features/)
 - [Wasm flags list](https://clang.llvm.org/docs/ClangCommandLineReference.html#webassembly)
+
 ```
 export WAFLAGS="-mbulk-memory -mnontrapping-fptoint -mmutable-globals -msign-ext"
 ```
 
 ## Step 2: Emscripten
+
 - As of writing, Emscripten 3.1.6x is known to work
 - Reference [this guide](https://emscripten.org/docs/getting_started/downloads.html) to setup Emscripten, the WASM compiler
+
 ```
 # Get EMSDK
 git clone https://github.com/emscripten-core/emsdk.git
@@ -60,6 +67,7 @@ source ./emsdk_env.sh
 ```
 
 ## Step 3: OpenFST
+
 ```
 # Go to build root
 cd "$ROOT"
@@ -89,7 +97,9 @@ emmake make -j$(nproc) install > /dev/null
 ```
 
 ## Step 4: OpenBLAS
+
 - The most crucial step of the build, some hacks are required for this to work
+
 ```
 # Go to build root
 cd "$ROOT"
@@ -114,6 +124,7 @@ PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
 ```
 
 ## Step 5: Kaldi
+
 ```
 # Go to build root
 cd "$ROOT"
@@ -132,6 +143,7 @@ make -j$(nproc) online2 > /dev/null
 ```
 
 ## Step 6: Clean up
+
 ```
 # Go to build root
 cd "$ROOT"
@@ -141,6 +153,7 @@ rm -rf openfst.tgz openfst openblas
 ```
 
 ## Full command
+
 ```
 export ROOT="$PWD"
 git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
@@ -176,8 +189,11 @@ make -j$(nproc) online2 > /dev/null
 cd "$ROOT"
 rm -rf openfst.tgz openfst openblas
 ```
+
 # Linking and running example
-- We're going to run ```nnet2/am-nnet-test.cc```
+
+- We're going to run `nnet2/am-nnet-test.cc`
+
 ```
 # Compiler flags
 export CXXFLAGS="
@@ -188,7 +204,7 @@ export CXXFLAGS="
 
 # Linker flags
 export LDFLAGS="
--L$ROOT/kaldi/src 
+-L$ROOT/kaldi/src
 -l:online2/kaldi-online2.a        -l:decoder/kaldi-decoder.a
 -l:ivector/kaldi-ivector.a        -l:gmm/kaldi-gmm.a
 -l:tree/kaldi-tree.a              -l:feat/kaldi-feat.a
@@ -197,7 +213,7 @@ export LDFLAGS="
 -l:transform/kaldi-transform.a    -l:matrix/kaldi-matrix.a
 -l:fstext/kaldi-fstext.a          -l:util/kaldi-util.a
 -l:base/kaldi-base.a              -l:nnet2/kaldi-nnet2.a
--L$ROOT/openfst-build/lib         -l:libfst.a 
+-L$ROOT/openfst-build/lib         -l:libfst.a
 -L$ROOT/openblas-build/lib        -l:libopenblas.a"
 
 # Go to build root
@@ -206,4 +222,5 @@ cd "$ROOT"
 # Generate .html, .js, and .wasm
 em++ $WAFLAGS -O3 $CXXFLAGS $LDFLAGS kaldi/src/nnet2/am-nnet-test.cc -o index.html
 ```
-- Open the ```index.html``` in a browser, check the console for logs from the test.
+
+- Open the `index.html` in a browser, check the console for logs from the test.

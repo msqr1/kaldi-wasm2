@@ -8,10 +8,12 @@
 
 - This guide compiles Kaldi's "online decoding" target `online2` More info: https://kaldi-asr.org/doc/online_decoding.html
 
-## Versions
+- Guide version will be updated to follow Emscripten/OpenFST/OpenBLAS version change
+
+## Current versions
 
 - Emscripten: 3.1.69
-- OpenFST: 1.8.3
+- OpenFST: 1.8.4
 - OpenBLAS: 0.3.28
 - Kaldi: ???
 
@@ -36,7 +38,7 @@ cd "$ROOT"
   - Chrome ≥ 75 (2019)
   - Firefox ≥ 79 (2020)
   - Safari ≥ 15 (2021)
-  - Edge ≥ 79 (2020)
+  - Edge ≥ 79 (2020)  
 - [Wasm features support table](https://webassembly.org/features/)
 - [Wasm flags list](https://clang.llvm.org/docs/ClangCommandLineReference.html#webassembly)
 
@@ -73,7 +75,7 @@ source ./emsdk_env.sh
 cd "$ROOT"
 
 # Get OpenFST
-wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.3.tar.gz -O openfst.tgz
+wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.4.tar.gz -O openfst.tgz
 
 # Decompress
 mkdir openfst
@@ -136,7 +138,7 @@ git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm
 cd kaldi/src
 
 # Configuring static Kaldi with static installed dependencies
-CXXFLAGS="$WAFLAGS -UHAVE_EXECINFO_H -g0 -O3 -msimd128" emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
+CXXFLAGS="$WAFLAGS -UHAVE_EXECINFO_H -g0 -O3 -msimd128" emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.4' --openblas-root="$ROOT/openblas-build" --host=WASM
 
 # Compile our target
 make -j$(nproc) online2 > /dev/null
@@ -158,19 +160,17 @@ rm -rf openfst.tgz openfst openblas
 export ROOT="$PWD"
 git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
 cd "$ROOT"
-git clone https://github.com/emscripten-core/emsdk.git
+git clone --depth 1 https://github.com/emscripten-core/emsdk.git
 cd emsdk
 ./emsdk install 3.1.69
 ./emsdk activate 3.1.69
 source emsdk_env.sh
 cd "$ROOT"
 export WAFLAGS="-mbulk-memory -mnontrapping-fptoint -mmutable-globals -msign-ext"
-wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.3.tar.gz -O openfst.tgz
+wget https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.8.4.tar.gz -O openfst.tgz
 mkdir openfst
 tar -xzf openfst.tgz -C openfst --strip-component 1
 cd openfst
-patch -i "$ROOT"/patches/openfst/fst.h.patch ./src/include/fst/fst.h
-patch -i "$ROOT"/patches/openfst/bi-table.h.patch ./src/include/fst/bi-table.h
 CXXFLAGS="$WAFLAGS -O3 -fno-rtti" emconfigure ./configure --prefix="$ROOT/openfst-build" --enable-static --disable-shared --enable-ngram-fsts --disable-bin
 emmake make -j$(nproc) install > /dev/null
 cd "$ROOT"
@@ -184,7 +184,7 @@ PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
 cd "$ROOT"
 git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm kaldi
 cd kaldi/src
-CXXFLAGS="$WAFLAGS -UHAVE_EXECINFO_H -g0 -O3 -msimd128" emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.3' --openblas-root="$ROOT/openblas-build" --host=WASM
+CXXFLAGS="$WAFLAGS -UHAVE_EXECINFO_H -g0 -O3 -msimd128" emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.4' --openblas-root="$ROOT/openblas-build" --host=WASM
 make -j$(nproc) online2 > /dev/null
 cd "$ROOT"
 rm -rf openfst.tgz openfst openblas
@@ -223,4 +223,4 @@ cd "$ROOT"
 em++ $WAFLAGS -O3 $CXXFLAGS $LDFLAGS kaldi/src/nnet2/am-nnet-test.cc -o index.html
 ```
 
-- Open the `index.html` in a browser, check the console for logs from the test.
+- Open the `index.html` in a browser, check the console for logs from the test. Note that file URL will not work, use 127.0.0.1 or something else.

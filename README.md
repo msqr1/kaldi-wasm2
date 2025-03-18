@@ -132,7 +132,7 @@ PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
 cd "$ROOT"
 
 # Get Kaldi
-git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm
+git clone --depth 1 https://github.com/kaldi-asr/kaldi
 
 # Enter Kaldi source
 cd kaldi/src
@@ -182,7 +182,7 @@ patch -i "$ROOT"/patches/openblas/Makefile.system.patch Makefile.system
 CC=emcc HOSTCC=gcc-12 TARGET=RISCV64_GENERIC USE_THREAD=0 NO_SHARED=1 BINARY=32 BUILD_SINGLE=1 BUILD_DOUBLE=1 BUILD_BFLOAT16=0 BUILD_COMPLEX16=0 BUILD_COMPLEX=0 CFLAGS="$WAFLAGS -fno-exceptions -fno-rtti" make -j$(nproc) > /dev/null
 PREFIX="$ROOT/openblas-build" NO_SHARED=1 make install
 cd "$ROOT"
-git clone --depth 1 https://github.com/msqr1/new-kaldi-wasm kaldi
+git clone --depth 1 https://github.com/kaldi-asr/kaldi
 cd kaldi/src
 CXXFLAGS="$WAFLAGS -UHAVE_EXECINFO_H -g0 -O3 -msimd128" emconfigure ./configure --use-cuda=no --with-cudadecoder=no --static --static-math --static-fst --fst-root="$ROOT/openfst-build" --fst-version='1.8.4' --openblas-root="$ROOT/openblas-build" --host=WASM
 make -j$(nproc) online2 > /dev/null

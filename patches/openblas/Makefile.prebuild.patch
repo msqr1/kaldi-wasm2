@@ -1,2 +1,0 @@
-75d74
-< TARGET_FLAGS = -march=rv64imafdc -mabi=lp64d

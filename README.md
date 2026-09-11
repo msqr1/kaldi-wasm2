@@ -12,8 +12,8 @@
 
 ## Current versions
 
-- Emscripten: 3.1.69
-- OpenFST: 1.8.4
+- Emscripten: 6.0.8
+- OpenFST: 1.8.5
 - OpenBLAS: 0.3.28
 - Kaldi: ???
 
@@ -24,21 +24,18 @@
 - Compilation optimization level is -O3 by default througout this guide
 
 ```
-# Our build root, exported so that we can refer to it in this terminal
-export ROOT="$PWD"
-
 # Clone this repository
-git clone --depth 1 https://github.com/msqr1/kaldi-wasm2 "$ROOT"
+git clone --depth 1 https://github.com/msqr1/kaldi-wasm2
 
-# Enter that directory
-cd "$ROOT"
+# Get in
+cd kaldi-wasm2
 ```
 
 - **Optional**: WASM-specific compilation flags that can boost performance, selected by me with careful condsideration on browser support:
   - Chrome ≥ 75 (2019)
   - Firefox ≥ 79 (2020)
   - Safari ≥ 15 (2021)
-  - Edge ≥ 79 (2020)  
+  - Edge ≥ 79 (2020)
 - [Wasm features support table](https://webassembly.org/features/)
 - [Wasm flags list](https://clang.llvm.org/docs/ClangCommandLineReference.html#webassembly)
 

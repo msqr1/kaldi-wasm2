@@ -1,2 +1,11 @@
 .cache
 emsdk
+Abseil.tgz
+abseil*
+OpenFst.tgz
+openfst*
+OpenBlas.tgz
+OpenBLAS*
+openblas*
+Kaldi.tgz
+kaldi*
